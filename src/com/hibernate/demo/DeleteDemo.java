@@ -4,31 +4,40 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.hibernate.demo.entity.*;
 import com.hibernate.demo.entity.Student;
 
-public class CreateStudentDemo {
+public class DeleteDemo {
 
 	public static void main(String[] args) {
 		
 		//create session factory
 		//SessionFactory factory = new Configuration().configure().addAnnotatedClass(Student.class).buildSessionFactory();//default
-		SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(Student.class).buildSessionFactory();
+		SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(Instructor.class).addAnnotatedClass(InstructorDetail.class).buildSessionFactory();
 		
 		//create session
 		Session session = factory.getCurrentSession();
 		
 		try {
 		
-			//create a student object
-			System.out.println("Creating new student object...");
-			Student tempStudent = new Student("Paul","wall","paul@lu2code.com");
+			
+			
 			
 			//start a transaction
 			session.beginTransaction();
 			
-			//save the student object
-			System.out.println("Saving the student...");
-			session.save(tempStudent);
+			//get instructor by primary key/id
+			int theId=1;
+			Instructor tempInstructor =session.get(Instructor.class, theId);
+			
+			System.out.println("Found instructor:"+tempInstructor);
+			
+			//delete the instructors
+			if(tempInstructor !=null) {
+				System.out.println("Deleting: "+tempInstructor);
+				//Note:will Also delete associate "details" object because of CascadeType.All
+				session.delete(tempInstructor);
+			}
 			
 			//commit transaction
 			session.getTransaction().commit();
